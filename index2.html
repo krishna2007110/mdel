@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>3D Interactive Animal Cell (GLTF Enhanced)</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      // Custom component for interactivity
+      AFRAME.registerComponent("organelle-info", {
+        schema: {
+          text: { type: "string", default: "No information" },
+        },
+        init: function () {
+          const el = this.el;
+          const data = this.data;
+
+          // Label text
+          const label = document.createElement("a-entity");
+          label.setAttribute("text", {
+            value: data.text,
+            align: "center",
+            width: 3,
+            color: "#111",
+            wrapCount: 40,
+          });
+          label.setAttribute("position", "0 1.5 0");
+          label.setAttribute("visible", "false");
+          el.appendChild(label);
+
+          // Events
+          el.addEventListener("click", () => {
+            const visible = label.getAttribute("visible");
+            label.setAttribute("visible", !visible);
+            el.setAttribute("animation__glow", {
+              property: "material.emissiveIntensity",
+              from: 0,
+              to: 1,
+              dur: 200,
+              dir: "alternate",
+              loop: 2,
+            });
+          });
+
+          el.addEventListener("mouseenter", () => {
+            el.setAttribute("scale", "1.2 1.2 1.2");
+          });
+          el.addEventListener("mouseleave", () => {
+            el.setAttribute("scale", "1 1 1");
+            label.setAttribute("visible", "false");
+          });
+        },
+      });
+    </script>
+
+    <!-- A-Frame Scene -->
+    <a-scene background="color: #e8f9ff" shadow="type: pcfsoft">
+      <!-- Lighting -->
+      <a-entity light="type: ambient; intensity: 0.6"></a-entity>
+      <a-entity light="type: directional; intensity: 0.9" position="1 1 1"></a-entity>
+
+      <!-- Camera -->
+      <a-entity
+        camera
+        position="0 2 10"
+        look-controls
+        orbit-controls="autoRotate: true; target: #cell-membrane"
+      ></a-entity>
+
+      <!-- Cell membrane -->
+      <a-sphere
+        id="cell-membrane"
+        radius="5"
+        color="#a6dcef"
+        opacity="0.3"
+        side="back"
+        shadow="receive: true"
+      ></a-sphere>
+
+      <!-- Cytoplasm -->
+      <a-sphere radius="4.8" color="#d0f8ff" opacity="0.1"></a-sphere>
+
+      <!-- Nucleus (GLTF model) -->
+      <a-entity
+        gltf-model="https://cdn.jsdelivr.net/gh/KrishnaTiwariAI/models/nucleus.glb"
+        scale="1.5 1.5 1.5"
+        position="0 0 0"
+        rotation="0 0 0"
+        organelle-info="text: Nucleus - Contains genetic material (DNA) and controls cell activities."
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 10000"
+      ></a-entity>
+
+      <!-- Mitochondrion -->
+      <a-entity
+        gltf-model="https://cdn.jsdelivr.net/gh/KrishnaTiwariAI/models/mitochondria.glb"
+        scale="0.8 0.8 0.8"
+        position="2 1 1"
+        organelle-info="text: Mitochondrion - Powerhouse of the cell, produces energy (ATP)."
+        animation="property: position; dir: alternate; dur: 2000; loop: true; to: 2 1.2 1"
+      ></a-entity>
+
+      <!-- Golgi Apparatus -->
+      <a-entity
+        gltf-model="https://cdn.jsdelivr.net/gh/KrishnaTiwariAI/models/golgi.glb"
+        scale="1 1 1"
+        position="-2 -1 0"
+        organelle-info="text: Golgi Apparatus - Modifies and packages proteins for transport."
+      ></a-entity>
+
+      <!-- Endoplasmic Reticulum -->
+      <a-entity
+        gltf-model="https://cdn.jsdelivr.net/gh/KrishnaTiwariAI/models/er.glb"
+        scale="1.5 1.5 1.5"
+        position="1 -1 0"
+        organelle-info="text: Endoplasmic Reticulum - Synthesizes and transports proteins and lipids."
+      ></a-entity>
+
+      <!-- Lysosome -->
+      <a-entity
+        gltf-model="https://cdn.jsdelivr.net/gh/KrishnaTiwariAI/models/lysosome.glb"
+        scale="0.7 0.7 0.7"
+        position="-1.5 1.5 -1"
+        organelle-info="text: Lysosome - Breaks down waste materials and cellular debris."
+        animation="property: position; dir: alternate; dur: 2500; loop: true; to: -1.5 1.7 -1"
+      ></a-entity>
+
+      <!-- Ribosome -->
+      <a-entity
+        gltf-model="https://cdn.jsdelivr.net/gh/KrishnaTiwariAI/models/ribosome.glb"
+        scale="0.3 0.3 0.3"
+        position="2 -2 1"
+        organelle-info="text: Ribosome - Synthesizes proteins from amino acids."
+      ></a-entity>
+    </a-scene>
+  </body>
+</html>
