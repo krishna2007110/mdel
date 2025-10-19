@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Interactive 3D Animal Cell Model</title>
+    <meta charset="utf-8" />
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  </head>
+
+  <body>
+    <!-- Custom Component for Organelle Interaction -->
+    <script>
+      AFRAME.registerComponent("organelle-info", {
+        schema: {
+          text: { type: "string", default: "No info" },
+          color: { type: "string", default: "#FFF" },
+        },
+        init: function () {
+          const el = this.el;
+          const data = this.data;
+
+          // Info label
+          this.label = document.createElement("a-entity");
+          this.label.setAttribute("text", {
+            value: data.text,
+            align: "center",
+            width: 3,
+            color: "#000",
+            wrapCount: 40,
+          });
+          this.label.setAttribute("position", "0 1.2 0");
+          this.label.setAttribute("visible", "false");
+          el.appendChild(this.label);
+
+          // Click sound
+          const clickSound = document.createElement("a-sound");
+          clickSound.setAttribute(
+            "src",
+            "https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models/2.0/Audio/sounds/click.mp3"
+          );
+          clickSound.setAttribute("on", "click");
+          el.appendChild(clickSound);
+
+          // Click event
+          el.addEventListener("click", () => {
+            const visible = this.label.getAttribute("visible");
+            this.label.setAttribute("visible", !visible);
+            el.setAttribute("material", "emissive", "#FFFF00");
+            setTimeout(() => el.setAttribute("material", "emissive", "#000000"), 300);
+          });
+
+          // Hover effects
+          el.addEventListener("mouseenter", () => {
+            el.setAttribute("scale", "1.2 1.2 1.2");
+          });
+          el.addEventListener("mouseleave", () => {
+            el.setAttribute("scale", "1 1 1");
+            this.label.setAttribute("visible", "false");
+          });
+        },
+      });
+    </script>
+
+    <!-- Scene -->
+    <a-scene background="color: #d0f0ff">
+      <!-- Lighting -->
+      <a-entity light="type: ambient; color: #BBB"></a-entity>
+      <a-entity light="type: directional; intensity: 1" position="1 1 1"></a-entity>
+
+      <!-- Camera Controls -->
+      <a-entity id="camera" camera look-controls orbit-controls="autoRotate: true; target: #cell-membrane" position="0 2 8"></a-entity>
+
+      <!-- Cell Membrane -->
+      <a-sphere
+        id="cell-membrane"
+        radius="4"
+        color="#a3c9f8"
+        opacity="0.3"
+        side="back"
+        shadow="receive: true"
+      ></a-sphere>
+
+      <!-- Cytoplasm -->
+      <a-sphere radius="3.9" color="#e0f7fa" opacity="0.1"></a-sphere>
+
+      <!-- Nucleus -->
+      <a-entity
+        position="0 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"
+        organelle-info="text: Nucleus - Controls cell activities and stores DNA.; color: #800080"
+      >
+        <a-sphere radius="1.2" color="#800080" material="roughness: 0.6; metalness: 0.3"></a-sphere>
+      </a-entity>
+
+      <!-- Mitochondrion -->
+      <a-entity
+        position="2 1 1"
+        animation="property: position; dir: alternate; dur: 2000; loop: true; to: 2 1.3 1"
+        organelle-info="text: Mitochondrion - Produces ATP, the energy currency of the cell.; color: #ff4500"
+      >
+        <a-cylinder height="2" radius="0.5" rotation="90 0 0" color="#ff4500"></a-cylinder>
+      </a-entity>
+
+      <!-- Golgi Apparatus -->
+      <a-entity
+        position="-2 -1 0.5"
+        organelle-info="text: Golgi Apparatus - Packages and distributes proteins.; color: #32cd32"
+      >
+        <a-box width="0.2" height="1.5" depth="1" rotation="0 0 30" color="#32cd32"></a-box>
+        <a-box width="0.2" height="1.5" depth="1" rotation="0 0 0" position="0.3 0 0" color="#32cd32"></a-box>
+        <a-box width="0.2" height="1.5" depth="1" rotation="0 0 -30" position="0.6 0 0" color="#32cd32"></a-box>
+      </a-entity>
+
+      <!-- Endoplasmic Reticulum -->
+      <a-torus
+        position="1 -1 0"
+        radius="1.2"
+        radius-tubular="0.1"
+        color="#4682B4"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 15000"
+        organelle-info="text: Endoplasmic Reticulum - Synthesizes proteins and lipids.; color: #4682B4"
+      ></a-torus>
+
+      <!-- Lysosome -->
+      <a-sphere
+        position="-1.5 1.5 -1"
+        radius="0.4"
+        color="#FFD700"
+        animation="property: position; dir: alternate; dur: 2500; loop: true; to: -1.5 1.7 -1"
+        organelle-info="text: Lysosome - Breaks down waste materials and cellular debris.; color: #FFD700"
+      ></a-sphere>
+
+      <!-- Ribosome -->
+      <a-sphere
+        position="1.8 -1.8 1.5"
+        radius="0.3"
+        color="#ff69b4"
+        organelle-info="text: Ribosome - Synthesizes proteins.; color: #ff69b4"
+      ></a-sphere>
+    </a-scene>
+  </body>
+</html>
